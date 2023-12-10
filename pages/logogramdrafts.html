@@ -1,16 +1,60 @@
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<canvas id="myCanvas" width="200" height="200"></canvas>
-<script>
-  var chart = new CanvasJS.Chart("myCanvas", {
-    animationEnabled: true,
-    data: [
-      {
-        type: "pie",
-        startAngle: 0,
-        indexLabel: false,
-        dataPoints: [{ y: 100, color: "green" }],
-      },
-    ],
-  });
-  chart.render();
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tendril Drawing</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas" width="500" height="500"></canvas>
+  <script>
+    class Tendril {
+      constructor(x, y, width = 15) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.angle = Math.random() * 2 * Math.PI; // random angle in radians.
+        this.segments = [];
+        this.v = 0;
+      }
+
+      create(distance = 3.0, curl = 0.01, step = 0.02, nmbSegments = 50) {
+        distance = Math.random() * (distance - distance / 2) + distance / 2;
+        nmbSegments = Math.round(Math.random() * (nmbSegments * 1.2 - nmbSegments) + nmbSegments);
+
+        for (let i = 1; i < nmbSegments; i++) {
+          this.x += Math.cos(this.angle) * distance;
+          this.y += Math.sin(this.angle) * distance;
+          this.v = 0;
+          this.v += Math.random() * (step - -step) + -step;
+          this.v *= 0.9 + curl * 0.1;
+          this.angle += this.v;
+
+          this.segments.push({x: this.x, y: this.y, angle: this.angle});
+        }
+      }
+
+      draw(ctx) {
+        const n = this.segments.length;
+        for (let i = 0; i < n; i++) {
+          const {x, y} = this.segments[i];
+          const r = this.width;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+          ctx.fillStyle = 'black';
+          ctx.fill();
+        }
+      }
+    }
+
+    const myTendril = new Tendril(50, 50);
+    myTendril.create();
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    myTendril.draw(ctx);
+  </script>
+</body>
+</html>
