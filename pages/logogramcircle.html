@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Circular Stroke Drawing</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas" width="500" height="500"></canvas>
+  <script>
+    class CircularStroke {
+      constructor(nmb, center, centerVar, thicknessVar, rad, radVar) {
+        this.nmb = nmb;
+        this.center = center;
+        this.centerVar = centerVar;
+        this.thicknessVar = thicknessVar;
+        this.rad = rad;
+        this.radVar = radVar;
+      }
+
+      arc(ctx, bbox, start, end, fill, width = 1.0, segments = 100) {
+        start *= Math.PI / 180.0;
+        end *= Math.PI / 180.0;
+        const da = (end - start) / segments;
+        start -= da / 2;
+        end -= da / 2;
+        const rx = (bbox[2] - bbox[0]) / 2;
+        const ry = (bbox[3] - bbox[1]) / 2;
+        const cx = bbox[0] + rx;
+        const cy = bbox[1] + ry;
+        const l = (rx + ry) * da / 2.0;
+        const widthMax = width;
+
+        for (let i = 0; i < segments; i++) {
+          width = Math.floor(Math.random() * (widthMax - -widthMax + 1)) + -widthMax;
+          const a = start + (i + 0.5) * da;
+          const x = cx + Math.cos(a) * rx;
+          const y = cy + Math.sin(a) * ry;
+          const dx = -Math.sin(a) * rx / (rx + ry);
+          const dy = Math.cos(a) * ry / (rx + ry);
+
+          ctx.beginPath();
+          ctx.moveTo(x - dx * l, y - dy * l);
+          ctx.lineTo(x + dx * l, y + dy * l);
+          ctx.strokeStyle = fill;
+          ctx.lineWidth = width;
+          ctx.stroke();
+        }
+      }
+
+      draw(ctx, angle, gapWidth) {
+        for (let i = 1; i < this.nmb; i++) {
+          const xVar = this.center[0] + Math.random() * (this.centerVar - -this.centerVar) + -this.centerVar;
+          const yVar = this.center[1] + Math.random() * (this.centerVar - -this.centerVar) + -this.centerVar;
+          const thickness = this.thicknessVar;
+          const randomRad = this.rad * Math.random() * (this.radVar[1] - this.radVar[0]) + this.radVar[0];
+          const holeAngle = angle;
+          const v = gapWidth;
+          const randomAngleStart = Math.random() * (v + holeAngle - 180 + holeAngle - v) + 180 + holeAngle - v;
+          const randomAngleEnd = Math.random() * (randomAngleStart - 360 + holeAngle - v) + 360 + holeAngle - v;
+
+          this.arc(ctx, [xVar - randomRad, yVar - randomRad, xVar + randomRad, yVar + randomRad], 
+          randomAngleStart, randomAngleEnd, 'black', thickness);
+        }
+      }
+
+      drawCircleBlob(ctx, angle, blobLength, blobWidth, nmbCircles, centerVarBlob) {
+        for (let i = 1; i < nmbCircles; i++) {
+          const xVar = this.center[0] + Math.random() * (centerVarBlob / 2 - -centerVarBlob / 2) + -centerVarBlob / 2;
+          const yVar = this.center[1] + Math.random() * (centerVarBlob / 2 - -centerVarBlob / 2) + -centerVarBlob / 2;
+          const thickness = Math.round(this.thicknessVar * Math.random() * (4 - 0) + 0);
+          const randomRad = this.rad + Math.random() * (blobWidth - -blobWidth) + -blobWidth;
+          const randomAngleStart = angle + Math.random() * (0 - blobLength / 2) + blobLength / 2;
+          const randomAngleEnd = angle - Math.random() * (0 - blobLength / 2) + blobLength / 2;
+
+          this.arc(ctx, [xVar - randomRad, yVar - randomRad, xVar + randomRad, yVar + randomRad], 
+          randomAngleStart, randomAngleEnd, 'black', thickness);
+        }
+      }
+    }
+
+    const myCircularStroke = new CircularStroke(50, [250, 250], 50, 5, 100, [0.8, 1.2]);
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    myCircularStroke.draw(ctx, 0, 10);
+  </script>
+</body>
+</html>

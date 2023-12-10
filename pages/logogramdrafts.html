@@ -43,7 +43,8 @@
           const {x, y} = this.segments[i];
           const r = this.width;
           ctx.beginPath();
-          ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+          //ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+          ctx.ellipse(x + r, y + r, r, r, 0, 0, 2 * Math.PI);
           ctx.fillStyle = 'black';
           ctx.fill();
         }

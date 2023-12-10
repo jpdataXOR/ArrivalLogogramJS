@@ -1,0 +1,61 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Logogram Drawing</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <script>
+      // Tendril class
+    class Tendril{
+
+    }
+
+      // CircularStroke class
+    class CircularStroke{
+      
+    }
+
+      function disks(ctx, center, rad, nmbDisks, minAngleExtent, maxAngleExtent, size = 25, tendril = false) {
+        const radVarDisk = Math.random() * (size - size / 4) + size / 4;
+
+        for (let i = 1; i < nmbDisks; i++) {
+          const angle = Math.random() * (maxAngleExtent - minAngleExtent) + minAngleExtent;
+          const varCenter = 35;
+          const xVar = center[0] + Math.random() * (varCenter - -varCenter) + -varCenter;
+          const yVar = center[1] + Math.random() * (varCenter - -varCenter) + -varCenter;
+          const x0 = xVar + rad * Math.cos(angle);
+          const y0 = yVar + rad * Math.sin(angle);
+          const x1 = x0 + Math.random() * (0 - radVarDisk) + radVarDisk;
+          const y1 = y0 + Math.random() * (0 - radVarDisk) + radVarDisk;
+
+          ctx.beginPath();
+          ctx.ellipse((x0 + x1) / 2, (y0 + y1) / 2, Math.abs(x1 - x0) / 2, Math.abs(y1 - y0) / 2, 0, 0, 2 * Math.PI);
+          ctx.fillStyle = 'black';
+          ctx.fill();
+
+          const tendrilVar = tendril && Math.random() * (4 - 0) + 0 > Math.PI;
+          if (tendrilVar) {
+            for (let i = 0; i < 1; i++) {
+              const tendril = new Tendril(x0, y0, 10);
+              const tendrilSize = Math.floor(Math.random() * (50 - 35 + 1)) + 35;
+              tendril.create(5.0, 10.0, 0.1, tendrilSize);
+              tendril.draw(ctx);
+            }
+          }
+        }
+      }
+
+      // ... (rest of the code)
+
+      const canvas = document.getElementById('myCanvas');
+      const ctx = canvas.getContext('2d');
+      // ... (call the functions with the appropriate parameters)
+    </script>
+  </body>
+  </html>

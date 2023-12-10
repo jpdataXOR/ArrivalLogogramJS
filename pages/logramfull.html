@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Logogram Drawing</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas" width="500" height="500"></canvas>
+  <script>
+    // Tendril class
+    class Tendril {
+      constructor(x, y, width = 15) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.angle = Math.random() * 2 * Math.PI; // random angle in radians.
+        this.segments = [];
+        this.v = 0;
+      }
+
+      create(distance = 3.0, curl = 0.01, step = 0.02, nmbSegments = 50) {
+        distance = Math.random() * (distance - distance / 2) + distance / 2;
+        nmbSegments = Math.round(Math.random() * (nmbSegments * 1.2 - nmbSegments) + nmbSegments);
+
+        for (let i = 1; i < nmbSegments; i++) {
+          this.x += Math.cos(this.angle) * distance;
+          this.y += Math.sin(this.angle) * distance;
+          this.v = 0;
+          this.v += Math.random() * (step - -step) + -step;
+          this.v *= 0.9 + curl * 0.1;
+          this.angle += this.v;
+
+          this.segments.push({x: this.x, y: this.y, angle: this.angle});
+        }
+      }
+
+      draw(ctx) {
+        const n = this.segments.length;
+        for (let i = 0; i < n; i++) {
+          const {x, y} = this.segments[i];
+          const r = this.width;
+          ctx.beginPath();
+          //ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+          ctx.ellipse(x + r, y + r, r, r, 0, 0, 2 * Math.PI);
+          ctx.fillStyle = 'black';
+          ctx.fill();
+        }
+      }
+    }
+
+    // CircularStroke class
+    class CircularStroke {
+      constructor(nmb, center, centerVar, thicknessVar, rad, radVar) {
+        this.nmb = nmb;
+        this.center = center;
+        this.centerVar = centerVar;
+        this.thicknessVar = thicknessVar;
+        this.rad = rad;
+        this.radVar = radVar;
+      }
+
+      arc(ctx, bbox, start, end, fill, width = 1.0, segments = 100) {
+        start *= Math.PI / 180.0;
+        end *= Math.PI / 180.0;
+        const da = (end - start) / segments;
+        start -= da / 2;
+        end -= da / 2;
+        const rx = (bbox[2] - bbox[0]) / 2;
+        const ry = (bbox[3] - bbox[1]) / 2;
+        const cx = bbox[0] + rx;
+        const cy = bbox[1] + ry;
+        const l = (rx + ry) * da / 2.0;
+        const widthMax = width;
+
+        for (let i = 0; i < segments; i++) {
+          width = Math.floor(Math.random() * (widthMax - -widthMax + 1)) + -widthMax;
+          const a = start + (i + 0.5) * da;
+          const x = cx + Math.cos(a) * rx;
+          const y = cy + Math.sin(a) * ry;
+          const dx = -Math.sin(a) * rx / (rx + ry);
+          const dy = Math.cos(a) * ry / (rx + ry);
+
+          ctx.beginPath();
+          ctx.moveTo(x - dx * l, y - dy * l);
+          ctx.lineTo(x + dx * l, y + dy * l);
+          ctx.strokeStyle = fill;
+          ctx.lineWidth = width;
+          ctx.stroke();
+        }
+      }
+
+      draw(ctx, angle, gapWidth) {
+        for (let i = 1; i < this.nmb; i++) {
+          const xVar = this.center[0] + Math.random() * (this.centerVar - -this.centerVar) + -this.centerVar;
+          const yVar = this.center[1] + Math.random() * (this.centerVar - -this.centerVar) + -this.centerVar;
+          const thickness = this.thicknessVar;
+          const randomRad = this.rad * Math.random() * (this.radVar[1] - this.radVar[0]) + this.radVar[0];
+          const holeAngle = angle;
+          const v = gapWidth;
+          const randomAngleStart = Math.random() * (v + holeAngle - 180 + holeAngle - v) + 180 + holeAngle - v;
+          const randomAngleEnd = Math.random() * (randomAngleStart - 360 + holeAngle - v) + 360 + holeAngle - v;
+
+          this.arc(ctx, [xVar - randomRad, yVar - randomRad, xVar + randomRad, yVar + randomRad], 
+          randomAngleStart, randomAngleEnd, 'black', thickness);
+        }
+      }
+
+      drawCircleBlob(ctx, angle, blobLength, blobWidth, nmbCircles, centerVarBlob) {
+        for (let i = 1; i < nmbCircles; i++) {
+          const xVar = this.center[0] + Math.random() * (centerVarBlob / 2 - -centerVarBlob / 2) + -centerVarBlob / 2;
+          const yVar = this.center[1] + Math.random() * (centerVarBlob / 2 - -centerVarBlob / 2) + -centerVarBlob / 2;
+          const thickness = Math.round(this.thicknessVar * Math.random() * (4 - 0) + 0);
+          const randomRad = this.rad + Math.random() * (blobWidth - -blobWidth) + -blobWidth;
+          const randomAngleStart = angle + Math.random() * (0 - blobLength / 2) + blobLength / 2;
+          const randomAngleEnd = angle - Math.random() * (0 - blobLength / 2) + blobLength / 2;
+
+          this.arc(ctx, [xVar - randomRad, yVar - randomRad, xVar + randomRad, yVar + randomRad], 
+          randomAngleStart, randomAngleEnd, 'black', thickness);
+        }
+      }
+    }
+
+
+    function disks(ctx, center, rad, nmbDisks, minAngleExtent, maxAngleExtent, size = 25, tendril = false) {
+      const radVarDisk = Math.random() * (size - size / 4) + size / 4;
+
+      for (let i = 1; i < nmbDisks; i++) {
+        const angle = Math.random() * (maxAngleExtent - minAngleExtent) + minAngleExtent;
+        const varCenter = 35;
+        const xVar = center[0] + Math.random() * (varCenter - -varCenter) + -varCenter;
+        const yVar = center[1] + Math.random() * (varCenter - -varCenter) + -varCenter;
+        const x0 = xVar + rad * Math.cos(angle);
+        const y0 = yVar + rad * Math.sin(angle);
+        const x1 = x0 + Math.random() * (0 - radVarDisk) + radVarDisk;
+        const y1 = y0 + Math.random() * (0 - radVarDisk) + radVarDisk;
+
+        ctx.beginPath();
+        ctx.ellipse((x0 + x1) / 2, (y0 + y1) / 2, Math.abs(x1 - x0) / 2, Math.abs(y1 - y0) / 2, 0, 0, 2 * Math.PI);
+        ctx.fillStyle = 'black';
+        ctx.fill();
+
+        const tendrilVar = tendril && Math.random() * (4 - 0) + 0 > Math.PI;
+        if (tendrilVar) {
+          for (let i = 0; i < 1; i++) {
+            const tendril = new Tendril(x0, y0, 10);
+            const tendrilSize = Math.floor(Math.random() * (50 - 35 + 1)) + 35;
+            tendril.create(5.0, 10.0, 0.1, tendrilSize);
+            tendril.draw(ctx);
+          }
+        }
+      }
+    }
+
+    function logogram(seed, imgSize, varThickness, varCenter, nmbCirc, varRad) {
+      const rad = imgSize[0] / 3;
+      const stroke = new CircularStroke(nmbCirc, [canvas.width / 2, canvas.height / 2], varCenter, varThickness, rad, varRad);
+      const angle = Math.floor(Math.random() * (360 - 0 + 1)) + 0;
+      const v = Math.floor(Math.random() * (90 - 0 + 1)) + 0;
+      stroke.draw(ctx, angle, v);
+
+      const nmbDisks = 70;
+      const minAngleExtent = Math.random() * (2 * Math.PI - 0) + 0;
+      const maxAngleExtent = minAngleExtent + 0.4;
+      const nmbCluster = Math.floor(Math.random() * (4 - 1 + 1)) + 1;
+      for (let i = 0; i < nmbCluster; i++) {
+        const minAngleExtent = Math.random() * (2 * Math.PI - 0) + 0;
+        const maxAngleExtent = minAngleExtent + 0.4;
+        disks(ctx, [canvas.width / 2, canvas.height / 2], rad, nmbDisks, minAngleExtent, maxAngleExtent, 100, true);
+        const middleAngle = (maxAngleExtent - (-1 * (minAngleExtent - maxAngleExtent) / 2)) * (180 / Math.PI);
+        stroke.drawCircleBlob(ctx, middleAngle, 60, 50, 20, 2);
+      }
+
+      disks(ctx, [canvas.width / 2, canvas.height / 2], rad, 70, 0, 2 * Math.PI, 25);
+    }
+
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Call the logogram function with the appropriate parameters
+    const seed = Math.random() * 10000;  // Replace this with a specific seed value if needed
+    logogram(seed, [2048, 2048], 10, 10, 100, [1, 1]);
+  </script>
+</body>
+</html>
