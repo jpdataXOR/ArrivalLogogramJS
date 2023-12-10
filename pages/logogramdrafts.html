@@ -1,0 +1,16 @@
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<canvas id="myCanvas" width="200" height="200"></canvas>
+<script>
+  var chart = new CanvasJS.Chart("myCanvas", {
+    animationEnabled: true,
+    data: [
+      {
+        type: "pie",
+        startAngle: 0,
+        indexLabel: false,
+        dataPoints: [{ y: 100, color: "green" }],
+      },
+    ],
+  });
+  chart.render();
+</script>

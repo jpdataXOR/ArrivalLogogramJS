@@ -36,10 +36,8 @@ const Home: React.FC = () => {
         dangerouslySetInnerHTML={{ __html: typedLetters }}
       ></div>
       <div className={styles.linkContainer}>
-      <Link href="/logogram">
-          Draw Logogram
-      </Link>
-        </div>
+        <Link href="/logogramdrafts.html">Draw Logogram</Link>
+      </div>
     </div>
   );
 };
