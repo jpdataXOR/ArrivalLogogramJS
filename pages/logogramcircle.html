@@ -85,7 +85,9 @@
     const myCircularStroke = new CircularStroke(50, [250, 250], 50, 5, 100, [0.8, 1.2]);
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
-    myCircularStroke.draw(ctx, 0, 10);
+    myCircularStroke.draw(ctx, 50, 1000);
+    myCircularStroke.drawCircleBlob(ctx, 90, 60, 20, 10, 30);
+
   </script>
 </body>
 </html>
