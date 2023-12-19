@@ -53,20 +53,21 @@
       }
 
       draw(ctx, angle, gapWidth) {
-        for (let i = 1; i < this.nmb; i++) {
-          const xVar = this.center[0] + Math.random() * (this.centerVar - -this.centerVar) + -this.centerVar;
-          const yVar = this.center[1] + Math.random() * (this.centerVar - -this.centerVar) + -this.centerVar;
-          const thickness = this.thicknessVar;
-          const randomRad = this.rad * Math.random() * (this.radVar[1] - this.radVar[0]) + this.radVar[0];
-          const holeAngle = angle;
-          const v = gapWidth;
-          const randomAngleStart = Math.random() * (v + holeAngle - 180 + holeAngle - v) + 180 + holeAngle - v;
-          const randomAngleEnd = Math.random() * (randomAngleStart - 360 + holeAngle - v) + 360 + holeAngle - v;
+  const xVar = this.center[0];
+  const yVar = this.center[1];
+  const thickness = this.thicknessVar;
+  const randomRad = this.rad;
 
-          this.arc(ctx, [xVar - randomRad, yVar - randomRad, xVar + randomRad, yVar + randomRad], 
-          randomAngleStart, randomAngleEnd, 'black', thickness);
-        }
-      }
+  const holeAngle = angle;
+  const v =  gapWidth;
+
+  const randomAngleStart = v + holeAngle;
+  const randomAngleEnd = 360 + holeAngle - v;
+
+  this.arc(ctx, [xVar - randomRad, yVar - randomRad, xVar + randomRad, yVar + randomRad], 
+  randomAngleStart, randomAngleEnd, 'black', thickness);
+}
+
 
       drawCircleBlob(ctx, angle, blobLength, blobWidth, nmbCircles, centerVarBlob) {
         for (let i = 1; i < nmbCircles; i++) {
@@ -83,11 +84,12 @@
       }
     }
 
-    const myCircularStroke = new CircularStroke(50, [250, 250], 50, 5, 100, [0.8, 1.2]);
+   // const myCircularStroke = new CircularStroke(50, [250, 250], 50, 5, 100, [0.8, 1.2]);
+   const myCircularStroke = new CircularStroke(50, [250, 250], 50, 5, 100, [0.8, 1.2]);
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
     myCircularStroke.draw(ctx, 50, 1000);
-    myCircularStroke.drawCircleBlob(ctx, 90, 60, 20, 10, 30);
+    //myCircularStroke.drawCircleBlob(ctx, 90, 60, 20, 10, 30);
 
   </script>
 </body>

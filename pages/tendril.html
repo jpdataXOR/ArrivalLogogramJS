@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tendril Simulation</title>
+</head>
+<body>
+    <canvas id="tendrilCanvas" width="800" height="600"></canvas>
+    <script>
+        class Tendril {
+            constructor(x, y, width = 15) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.angle = Math.random() * 2 * Math.PI;  // random angle in radians.
+                this.segments = [];
+                this.v = 0;
+            }
+
+            create(distance = 3.0, curl = 0.01, step = 0.02, nmbSegments = 50) {
+                distance = Math.random() * (distance / 2) + distance / 2;
+                nmbSegments = Math.round(Math.random() * (nmbSegments * 0.2) + nmbSegments);
+
+                for (let i = 1; i < nmbSegments; i++) {
+                    this.x += Math.cos(this.angle) * distance;
+                    this.y += Math.sin(this.angle) * distance;
+                    this.v = 0;
+                    this.v += Math.random() * step * 2 - step;
+                    this.v *= 0.9 + curl * 0.1;
+                    this.angle += this.v;
+
+                    this.segments.push({x: this.x, y: this.y, angle: this.angle});
+                }
+            }
+
+            draw(ctx) {
+                const n = this.segments.length;
+                for (let i = 0; i < n; i++) {
+                    const {x, y} = this.segments[i];
+                    const r = this.width;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'black';
+                    ctx.fill();
+                }
+            }
+        }
+
+        window.onload = function() {
+            const canvas = document.getElementById('tendrilCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const tendril = new Tendril(canvas.width / 2, canvas.height / 2);
+            tendril.create();
+            tendril.draw(ctx);
+        };
+    </script>
+</body>
+</html>
